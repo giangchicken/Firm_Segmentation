@@ -1,0 +1,25 @@
+# Xử lý văn bản
+nltk
+beautifulsoup4
+lxml
+
+# Mô hình embedding
+sentence-transformers
+
+# Tính toán & phân tích
+numpy
+scikit-learn
+pandas
+scipy
+
+# Vẽ biểu đồ và trực quan hoá (nếu cần)
+matplotlib
+seaborn
+
+# Đồ thị & phân cụm cộng đồng
+networkx
+python-louvain
+
+# Đọc .env cấu hình
+python-dotenv
+
