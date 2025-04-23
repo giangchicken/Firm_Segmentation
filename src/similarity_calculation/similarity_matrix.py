@@ -56,7 +56,7 @@ class SimilarityMatrixDask:
             ddf = dd.read_parquet(self.data_path, engine='pyarrow')
 
             # Set index (avoid re-sorting as it takes extra time)
-            ddf = ddf.set_index("domain_")
+            ddf = ddf.set_index("firm_")
 
             # Extract domain names (avoiding full compute where possible)
             domains = ddf.index.compute()  # Avoid converting to list immediately

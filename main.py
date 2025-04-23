@@ -9,6 +9,7 @@ import json
 import numpy as np
 from pathlib import Path
 from dotenv import load_dotenv
+import polars as pl
 
 
 def main():
@@ -32,7 +33,11 @@ def main():
 
     # ==== 1. NHÚNG EMBEDDING ====
     print("🚀 Đang nhúng embedding từ file HTML...")
-    file_paths = list(HTML_DIR.glob("**/*.html"))
+    json_file_path = Path(HTML_DIR) / "mapping.json"
+    with open(json_file_path, "r", encoding="utf-8") as f:
+        firm_info_list = json.load(f)
+    file_paths = [str(item["html_path"]) for item in firm_info_list]
+
     if not file_paths:
         print("❌ Không tìm thấy file HTML.")
         exit()
@@ -52,39 +57,47 @@ def main():
     print("📥 Load embeddings và metadata...")
     embeddings_path = Path(info["storage_folder"]) / "X_dev.npy"
     metadata_path = Path(info["storage_folder"]) / "split_info_dev.json"
+    with open(metadata_path, "r", encoding="utf-8") as f:
+        metadata = json.load(f)
+    firms = [str(item["firm"]) for item in firm_info_list if item["html_path"] in metadata["dev"]]
 
     all_vectors = np.load(embeddings_path)
-    with open(metadata_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-        all_domains = [x.split("/")[-2] for x in data["dev"]]
 
-    np.save(EMBEDDING_OUTPUT_DIR / "dev.npy", all_vectors)
-    with open(EMBEDDING_OUTPUT_DIR / "dev.json", "w", encoding="utf-8") as f:
-        json.dump({"domains": all_domains}, f, indent=4, ensure_ascii=False)
+    vectors_list = all_vectors.tolist()
+
+    # Tạo DataFrame với firm + vector
+    df = pl.DataFrame({
+        "firm_": firms,
+        "feature_vector": vectors_list
+    })
+
+    # Lưu ra file Parquet
+    df.write_parquet((EMBEDDING_OUTPUT_DIR / "dev_vectors.parquet").as_posix())
+    print(f"✅ Đã lưu vector vào: {EMBEDDING_OUTPUT_DIR / 'dev_vectors.parquet'}")
 
     # ==== 3. TÍNH SIMILARITY MATRIX BẰNG DASK ====
     print("🔹 Bước 3: Tính similarity matrix")
 
     smc = SimilarityMatrixDask(
-        data_path=EMBEDDING_OUTPUT_DIR.as_posix(),
+        data_path=(EMBEDDING_OUTPUT_DIR / "dev_vectors.parquet").as_posix(),
         output_path=similarity_output_path,
         memory_limit=memory_limit,
         n_workers=n_workers,
         threads_per_worker=threads_per_worker,
         error_api_url=None
     )
-    smc.setup_client({"temporary_directory": tmp_dir})
+    smc.setup_client({"./temporary_directory": tmp_dir})
     smc.compute_and_save_similarity_matrix()
 
     # ==== 4. TOP-K NEAREST NEIGHBORS ====
     print("🔹 Bước 4: Lấy top-k nearest neighbors")
-    extract_top_k_neighbors(similarity_output_path, k=10, output_path=top_k_output_path)
+    extract_top_k_neighbors(folder=similarity_output_path, top_k=3, output_folder=top_k_output_path)
 
     # ==== 5. TẠO EDGE THEO LUẬT ====
     print("🔹 Bước 5: Tạo danh sách cạnh đồ thị")
     create_edges_from_similarity_file(
-        parquet_path=top_k_output_path,
-        output_path=edge_output_path,
+        input_file=top_k_output_path,
+        output_file=edge_output_path,
         threshold=0.6,
         num_workers=6
     )

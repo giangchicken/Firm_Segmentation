@@ -7,7 +7,7 @@ import pandas as pd
 
 def graph_clustering(edge_file_path, parquet_path, output_path="final_clusters.json"):
     # Load cạnh
-    with open(edge_file_path, "r") as f:
+    with open(edge_file_path, "r", encoding="utf-8") as f:
         inter_edges = json.load(f)
 
     df = pd.read_parquet(parquet_path)
@@ -52,7 +52,7 @@ def graph_clustering(edge_file_path, parquet_path, output_path="final_clusters.j
 
     final_clusters_unique = list(new_clusters.values())
 
-    with open(output_path, "w") as f:
+    with open(output_path, "w", encoding="utf-8") as f:
         json.dump(final_clusters_unique, f, ensure_ascii=False, indent=2)
 
     print(f"✅ Đã lưu {len(final_clusters_unique)} cụm domain vào {output_path}")

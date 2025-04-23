@@ -3,7 +3,7 @@ import json
 import numpy as np
 from tqdm import tqdm
 from pathlib import Path
-from preprocessing import Preprocessor
+from .preprocessing import Preprocessor
 from sentence_transformers import SentenceTransformer
 import torch
 import logging
@@ -79,10 +79,9 @@ class EmbeddingProcessor:
             batched_embeddings.append(batch_embeddings)
         return np.vstack(batched_embeddings)
 
-    def save_embedding(self, embeddings, labels, file_names, type):
+    def save_embedding(self, embeddings, file_names, type):
         """Lưu tập dữ liệu embeddings."""
         np.save(self.output_dir / f"X_{type}.npy", embeddings)
-        np.save(self.output_dir / f"y_{type}.npy", labels)
 
         split_info = {f"{type}": file_names}
         with open(self.output_dir / f"split_info_{type}.json", "w", encoding="utf-8") as f:

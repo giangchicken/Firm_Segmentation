@@ -71,6 +71,6 @@ def create_edges_from_similarity_file(
         inter_edges.extend(res)
 
     print(f"✅ Tổng số cạnh tạo được: {len(inter_edges)}")
-    with open(output_file, "w") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(inter_edges, f, ensure_ascii=False, indent=2)
     print(f"💾 Đã lưu vào: {output_file}")
