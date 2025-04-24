@@ -12,6 +12,9 @@ scikit-learn
 pandas
 scipy
 
+# similarity calculation
+dask
+
 # Vẽ biểu đồ và trực quan hoá (nếu cần)
 matplotlib
 seaborn
