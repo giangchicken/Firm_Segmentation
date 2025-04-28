@@ -1,28 +1,29 @@
-# Xử lý văn bản
+# ===================== XỬ LÝ VĂN BẢN =====================
 nltk
 beautifulsoup4
 lxml
+inscriptis
+polars
 
-# Mô hình embedding
+# ===================== MÔ HÌNH EMBEDDING =====================
 sentence-transformers
+tf-keras
 
-# Tính toán & phân tích
+# ===================== TÍNH TOÁN & PHÂN TÍCH =====================
 numpy
 scikit-learn
 pandas
 scipy
 
-# similarity calculation
+# ===================== TÍNH TOÁN SIMILARITY =====================
 dask
 
-# Vẽ biểu đồ và trực quan hoá (nếu cần)
+# ===================== TRỰC QUAN HOÁ (NẾU CẦN) =====================
 matplotlib
 seaborn
 
-# Đồ thị & phân cụm cộng đồng
+# ===================== PHÂN CỤM & ĐỒ THỊ =====================
 networkx
-python-louvain
 
-# Đọc .env cấu hình
+# ===================== ĐỌC FILE .env =====================
 python-dotenv
-

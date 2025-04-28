@@ -1,4 +1,5 @@
 import os
+os.environ["TRANSFORMERS_NO_TF"] = "1"
 import json
 import numpy as np
 from tqdm import tqdm
@@ -7,6 +8,8 @@ from .preprocessing import Preprocessor
 from sentence_transformers import SentenceTransformer
 import torch
 import logging
+
+
 
 logger = logging.getLogger('uvicorn.error')
 
